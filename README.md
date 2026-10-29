@@ -36,6 +36,7 @@ utctime [--ago DURATION]
 | Flag | Description |
 | --- | --- |
 | `--ago DURATION` | Print the time `DURATION` in the past. Must be positive. |
+| `--version` | Print the version, e.g. `utctime v0.1.0`. |
 | `-h`, `--help` | Show help. |
 
 With no flags, `utctime` converts your system's current time to UTC.

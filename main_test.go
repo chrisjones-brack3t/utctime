@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"os"
+	"runtime/debug"
 	"strings"
 	"testing"
 	"time"
@@ -68,6 +69,27 @@ func TestRun(t *testing.T) {
 				t.Errorf("stderr = %q, want it to contain %q", stderr.String(), tc.wantStderr)
 			}
 		})
+	}
+}
+
+func TestVersion(t *testing.T) {
+	old := readBuildInfo
+	defer func() { readBuildInfo = old }()
+
+	readBuildInfo = func() (*debug.BuildInfo, bool) {
+		return &debug.BuildInfo{Main: debug.Module{Version: "v1.2.3"}}, true
+	}
+	var stdout, stderr bytes.Buffer
+	if code := run([]string{"--version"}, fixed, &stdout, &stderr); code != 0 {
+		t.Errorf("exit code = %d, want 0", code)
+	}
+	if got, want := stdout.String(), "utctime v1.2.3\n"; got != want {
+		t.Errorf("stdout = %q, want %q", got, want)
+	}
+
+	readBuildInfo = func() (*debug.BuildInfo, bool) { return nil, false }
+	if got, want := version(), "unknown"; got != want {
+		t.Errorf("version() without build info = %q, want %q", got, want)
 	}
 }
 

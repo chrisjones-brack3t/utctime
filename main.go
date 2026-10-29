@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -35,6 +36,7 @@ With no flags, prints the current time converted to UTC.
 Options:
   --ago DURATION   Print the time DURATION in the past, e.g. 30m, 1h, 1d, 1.5d.
                    Units: ns, us, ms, s, m, h, d. Must be positive.
+  --version        Print the version.
   -h, --help       Show this help.
 
 Examples:
@@ -43,8 +45,20 @@ Examples:
   utctime --ago 1d      one day ago
 `
 
-// exit is a variable so tests can intercept it.
-var exit = os.Exit
+// exit and readBuildInfo are variables so tests can replace them.
+var (
+	exit          = os.Exit
+	readBuildInfo = debug.ReadBuildInfo
+)
+
+// version returns the module version Go embedded at build time.
+// WHY: the git tag is the single source of truth; no version constant to keep in sync.
+func version() string {
+	if bi, ok := readBuildInfo(); ok {
+		return bi.Main.Version
+	}
+	return "unknown"
+}
 
 func main() {
 	exit(run(os.Args[1:], time.Now(), os.Stdout, os.Stderr))
@@ -58,11 +72,17 @@ func run(args []string, now time.Time, stdout, stderr io.Writer) int {
 	// WHY: the flag package already treats -h, --help and -help as ErrHelp; no extra flag needed.
 	fs.Usage = func() { fmt.Fprint(stderr, usage) }
 	ago := fs.String("ago", "", "go back in time by `DURATION` instead of printing the current time")
+	showVersion := fs.Bool("version", false, "print the version")
 	if err := fs.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			return 0
 		}
 		return 2
+	}
+
+	if *showVersion {
+		fmt.Fprintln(stdout, "utctime", version())
+		return 0
 	}
 
 	t := now
