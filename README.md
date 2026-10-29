@@ -13,6 +13,23 @@ Output is [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) in UTC (`YYYY-MM-DD
 
 ## Install
 
+### Download a release
+
+Grab the archive for your OS and CPU from the [Releases page](https://github.com/chrisjones-brack3t/utctime/releases), unpack it, and put `utctime` somewhere on your `PATH`. Builds are published for macOS, Linux and Windows on amd64 and arm64. Each release includes `checksums.txt` (SHA-256) so you can verify the download.
+
+```sh
+tar -xzf utctime_<version>_darwin_arm64.tar.gz
+mv utctime /usr/local/bin/
+```
+
+macOS blocks unsigned downloaded binaries. Clear the quarantine flag once:
+
+```sh
+xattr -d com.apple.quarantine /usr/local/bin/utctime
+```
+
+### With Go
+
 Requires Go (see `go.mod` for the version).
 
 ```sh
