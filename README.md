@@ -11,6 +11,10 @@ $ utctime --ago 1h
 
 Output is [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) in UTC (`YYYY-MM-DDTHH:MM:SSZ`), one line, so it drops straight into API queries, log searches, and SQL filters.
 
+## Why
+
+I was testing a Python management command and needed a UTC timestamp for a time in the past. Converting my local time to UTC in my head, over and over, got old fast. `utctime --ago 1h` gives me the answer to paste. It's simple and dumb and I really just wanted to see how long it would take me to create this.
+
 ## Install
 
 ### Download a release
